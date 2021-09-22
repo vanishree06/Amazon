@@ -1,88 +1,61 @@
-import sys
- class Node:
-    def __init__(self, data, left=None, right=None):
-        self.data = data
-        self.left = left
-        self.right = right
+class newNode:
  
- def isNodePresent(root, node):
-    if root is None:
-        return False
- 
-   
-    if root == node:
-        return True
-    return isNodePresent(root.left, node) or isNodePresent(root.right, node)
- 
+  
+    def __init__(self, data):
+        self.key = data
+        self.left = None
+        self.right = None
  
 
-def findLevel(root, node, level):
- 
-    
-    if root is None:
-        return -sys.maxsize
- 
-   
-    if root == node:
-        return level
- 
-    
-    left = findLevel(root.left, node, level + 1)
- 
-   
-    if left != -sys.maxsize:
-        return left
-    return findLevel(root.right, node, level + 1)
- 
+def insert(root, key):
+    if root == None:
+        root = newNode(key)
+    elif root.key > key:
+        root.left = insert(root.left, key)
+    elif root.key < key:
+        root.right = insert(root.right, key)
+    return root
  
 
-def findLCA(root, x, y):
- 
-    
-    if root is None:
-        return None
- 
-    
-    if root == x or root == y:
-        return root
-    left = findLCA(root.left, x, y)
-    right = findLCA(root.right, x, y)
-    if left and right:
-        return root
-    if left:
-        return left
-    if right:
-        return right
- 
-    return None
- 
+def distanceFromRoot(root, x):
+    if root.key == x:
+        return 0
+    elif root.key > x:
+        return 1 + distanceFromRoot(root.left, x)
+    return 1 + distanceFromRoot(root.right, x)
  
 
-def findDistance(root, x, y):
-     lca = None
-     if isNodePresent(root, y) and isNodePresent(root, x):
-        lca = findLCA(root, x, y)
-    else:
-        return -sys.maxsize
+def distanceBetween2(root, a, b):
+    if root == None:
+        return 0
+ 
+   
+    if root.key > a and root.key > b:
+        return distanceBetween2(root.left, a, b)
  
     
-    return findLevel(lca, x, 0) + findLevel(lca, y, 0)
+    if root.key < a and root.key < b: # same path
+        return distanceBetween2(root.right, a, b)
  
     
+    if root.key >= a and root.key <= b:
+        return (distanceFromRoot(root, a) + distanceFromRoot(root, b))
  
+
+def findDistWrapper(root, a, b):
+    if a > b:
+        a, b = b, a
+    return distanceBetween2(root, a, b)
  
+
 if __name__ == '__main__':
- 
-    
- 
-    root = Node(1)
-    root.left = Node(2)
-    root.right = Node(3)
-    root.left.right = Node(4)
-    root.right.left = Node(5)
-    root.right.right = Node(6)
-    root.right.left.left = Node(7)
-    root.right.right.right = Node(8)
-   
-   
-    print(findDistance(root, root.right.left.left, root.right.right))
+    root = None
+    root = insert(root, 20)
+    insert(root, 10)
+    insert(root, 5)
+    insert(root, 15)
+    insert(root, 30)
+    insert(root, 25)
+    insert(root, 35)
+    a, b = 5, 35
+    print(findDistWrapper(root, 5, 35))
